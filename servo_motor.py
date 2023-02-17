@@ -56,4 +56,4 @@ class ServoController:
 
     def _angle_to_duty(self, angle: int) -> int:
         """ convert the angle to duty cycle """
-        return int((angle - self._max_angle / 2) / 18 + 2)
+        return int((angle + self._max_angle / 2) / self._max_angle * 100)
