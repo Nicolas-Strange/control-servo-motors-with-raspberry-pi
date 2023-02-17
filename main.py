@@ -32,7 +32,7 @@ class Main:
         try:
             self._servo.go_to_position(angle=min_val_inc, speed=100, increment_factor=250)
             for inc in range(1, 230, 1):
-                for sleep_tm in range(10, 100, 5):
+                for sleep_tm in range(5, 105, 5):
                     init_time = time_ns()
                     sleep_iter = self._servo.go_to_position(angle=max_val_inc, speed=sleep_tm, increment_factor=inc)
                     time_proc = (time_ns() - init_time) / (10 ** 9)
