@@ -30,6 +30,7 @@ class Main:
             fd.write('speed(%),time(s),increment,sleep_iter(s)\n')
 
         try:
+            self._servo.go_to_position(angle=min_val_inc, speed=100, increment_factor=1000)
             for inc in range(1, 100, 1):
                 for sleep_tm in range(10, 100, 5):
                     init_time = time_ns()
@@ -38,7 +39,7 @@ class Main:
                     append_file(f"{sleep_tm},{time_proc},{inc},{sleep_iter}")
                     print(f"speed: {sleep_tm}% -- time: {time_proc}s -- increment: {inc} -- sleep_iter {sleep_iter}")
                     sleep(1)
-                    self._servo.go_to_position(angle=min_val_inc, speed=100, increment_factor=100)
+                    self._servo.go_to_position(angle=min_val_inc, speed=100, increment_factor=1000)
                     sleep(1)
         except KeyboardInterrupt:
             self._servo.release()
