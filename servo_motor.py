@@ -31,7 +31,7 @@ class ServoController:
         self._current_angle = 0
         self.go_to_position(angle=0, speed=100, inc=1)
 
-    def go_to_position(self, angle: int, speed: int, inc: int):
+    def go_to_position(self, angle: int, speed: int, inc: float) -> float:
         """
         set the position of the servo in degree.
         we have setup the position with 0 corresponding to the middle, positive angles to clock-wise,
@@ -43,8 +43,8 @@ class ServoController:
         :param inc: incrementation for each epoch
         """
         # range the value of angle between -90 and 90
-        angle = max(-self._max_angle/2, angle)
-        angle = min(self._max_angle/2, angle)
+        angle = max(-self._max_angle / 2, angle)
+        angle = min(self._max_angle / 2, angle)
 
         value_start = self._angle_to_duty(angle=self._current_angle)
         value_end = self._angle_to_duty(angle=angle)
@@ -53,9 +53,13 @@ class ServoController:
         sleep_iter = self._max_sleep - (self._max_sleep - self._min_sleep) * speed / 100 + self._min_sleep
 
         self._current_angle = angle
-        for value in range(value_start, value_end + increment, increment):
-            self._servo.ChangeDutyCycle(value)
+        value_duty = value_start
+        while value_duty <= value_end:
+            self._servo.ChangeDutyCycle(value_duty)
+            value_duty += increment
             sleep(sleep_iter)
+
+        return sleep_iter
 
     def release(self) -> None:
         """ release the PWM """

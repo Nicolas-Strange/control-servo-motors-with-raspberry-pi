@@ -6,6 +6,7 @@ from servo_motor import ServoController
 
 class Main:
     """ main class that will handle the loop """
+    SERVO_NAME = "servo_1"
 
     def __init__(self):
         """
@@ -14,7 +15,7 @@ class Main:
         with open("./params/servo_params.json") as infile:
             self._conf = json.load(infile)
 
-        self._servo = ServoController(signal_pin=2, **self._conf["servo_1"])
+        self._servo = ServoController(signal_pin=2, **self._conf[self.SERVO_NAME])
 
     def run(self) -> None:
         """
@@ -27,10 +28,14 @@ class Main:
         max_val_inc = 90
         self._servo.go_to_position(angle=90, speed=100, inc=10)
 
+        percent_min = self._conf[self.SERVO_NAME]["min_duty_ms"] / self._conf[self.SERVO_NAME]["period_ms"] * 100
+        percent_max = self._conf[self.SERVO_NAME]["max_duty_ms"] / self._conf[self.SERVO_NAME]["period_ms"] * 100
+
         with open('output.txt', 'w') as fd:
             fd.write('speed(%),time(s),increment,sleep_iter(s)\n')
         try:
-            for inc in range(1, 20):
+            for inc in range(1, 100):
+                inc = inc / 100 * (percent_max - percent_min)
                 for sleep_tm in range(10, 100, 5):
                     init_time = time_ns()
                     sleep_iter = self._servo.go_to_position(angle=max_val_inc, speed=sleep_tm, inc=inc)
