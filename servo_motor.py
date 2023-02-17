@@ -21,7 +21,7 @@ class ServoController:
         self._percent_min = min_duty / period * 100
         self._percent_max = max_duty / period * 100
 
-        self._min_increment = 20 * (self._percent_max - self._percent_min) / self._max_angle
+        self._min_increment = (self._percent_max - self._percent_min) / self._max_angle
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(signal_pin, GPIO.OUT)
@@ -29,7 +29,7 @@ class ServoController:
         self._current_angle = 0
         self._servo.start((self._percent_max - self._percent_min) / 2 + self._percent_min)
 
-    def go_to_position(self, angle: int, speed: int) -> float:
+    def go_to_position(self, angle: int, speed: int, increment_factor: int) -> float:
         """
         set the position of the servo in degree.
         we have setup the position with 0 corresponding to the middle, positive angles to clock-wise,
@@ -38,6 +38,7 @@ class ServoController:
         on the left will be -90.
         :param angle: position in degree
         :param speed: value between 1 and 100 corresponding to the percent of the maximum speed of the servo
+        :param increment_factor: how many times the minimum increment
         """
         # range the value of angle between -90 and 90
         angle = max(-self._max_angle / 2, angle)
@@ -46,7 +47,9 @@ class ServoController:
         value_start = self._angle_to_duty(angle=self._current_angle)
         value_end = self._angle_to_duty(angle=angle)
 
-        increment = self._min_increment if value_end - value_start > 0 else -self._min_increment
+        increment = increment_factor * self._min_increment \
+            if value_end - value_start > 0 else -self._min_increment * increment_factor
+
         sleep_iter = self._max_sleep - (self._max_sleep - self._min_sleep) * speed / 100 + self._min_sleep
 
         self._current_angle = angle
