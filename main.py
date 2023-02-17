@@ -23,10 +23,8 @@ class Main:
         For each iteration the motion value will be read
         """
 
-        self._servo.release()
         min_val_inc = -90
         max_val_inc = 90
-        self._servo.go_to_position(angle=90, speed=100)
 
         with open('output.txt', 'w') as fd:
             fd.write('speed(%),time(s),sleep_iter(s)\n')

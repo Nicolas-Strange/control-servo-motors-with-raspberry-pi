@@ -11,8 +11,6 @@ class ServoController:
         :param signal_pin: GPIO number where the signal of the servo is plugged (yellow wire)
         :param freq: frequency of the PWM (Pulse Width Modulation) in Hz (50 by default)
         """
-        self._signal_pin = signal_pin
-
         period = conf.get("period_ms", 20)  # period of a duty cycle
         self._max_angle = conf.get("max_angle", 180)  # maximum angle of the servo
         min_duty = conf.get("min_duty_ms", 1)  # maximum angle of the servo
