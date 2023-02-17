@@ -31,7 +31,7 @@ class ServoController:
         GPIO.output(self._signal_pin, True)
 
         self._current_angle = 0
-        self.go_to_position(angle=0, speed=100, inc=1)
+        self.go_to_position(angle=0, speed=100)
 
     def go_to_position(self, angle: int, speed: int) -> float:
         """
