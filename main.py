@@ -14,7 +14,7 @@ class Main:
         with open("./params/servo_params.json") as infile:
             self._conf = json.load(infile)
 
-        self._servo = ServoController(signal_pin=0, **self._conf["servo_1"])
+        self._servo = ServoController(signal_pin=2, **self._conf["servo_1"])
 
     def run(self) -> None:
         """
