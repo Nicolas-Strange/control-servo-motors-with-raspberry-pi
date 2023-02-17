@@ -28,10 +28,8 @@ class ServoController:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(signal_pin, GPIO.OUT)
         self._servo = GPIO.PWM(signal_pin, 1 / period * 1000)
-        GPIO.output(self._signal_pin, True)
-
         self._current_angle = 0
-        self.go_to_position(angle=0, speed=100)
+        GPIO.start((self._percent_max - self._percent_min) / 2 + self._percent_min)
 
     def go_to_position(self, angle: int, speed: int) -> float:
         """
@@ -68,11 +66,13 @@ class ServoController:
 
         return sleep_iter
 
-    def release(self) -> None:
-        """ release the PWM """
-        GPIO.output(self._signal_pin, False)
-
     def _angle_to_duty(self, angle: int) -> float:
         """ convert the angle to duty cycle """
         percent_duty = (angle + self._max_angle / 2) / self._max_angle
         return (percent_duty * (self._percent_max - self._percent_min)) + self._percent_min
+
+    @staticmethod
+    def release() -> None:
+        """ release the PWM """
+        GPIO.stop()
+        GPIO.cleanup()
