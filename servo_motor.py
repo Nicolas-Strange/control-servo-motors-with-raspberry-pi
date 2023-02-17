@@ -12,7 +12,7 @@ class ServoController:
         :param freq: frequency of the PWM (Pulse Width Modulation) in Hz (50 by default)
         """
         self._signal_pin = signal_pin
-        GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(signal_pin, GPIO.OUT)
         self._servo = GPIO.PWM(signal_pin, freq)
         GPIO.output(self._signal_pin, True)
