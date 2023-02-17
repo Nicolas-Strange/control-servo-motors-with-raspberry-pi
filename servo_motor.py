@@ -29,7 +29,7 @@ class ServoController:
         GPIO.setup(signal_pin, GPIO.OUT)
         self._servo = GPIO.PWM(signal_pin, 1 / period * 1000)
         self._current_angle = 0
-        GPIO.start((self._percent_max - self._percent_min) / 2 + self._percent_min)
+        self._servo.start((self._percent_max - self._percent_min) / 2 + self._percent_min)
 
     def go_to_position(self, angle: int, speed: int) -> float:
         """
@@ -71,8 +71,7 @@ class ServoController:
         percent_duty = (angle + self._max_angle / 2) / self._max_angle
         return (percent_duty * (self._percent_max - self._percent_min)) + self._percent_min
 
-    @staticmethod
-    def release() -> None:
+    def release(self) -> None:
         """ release the PWM """
-        GPIO.stop()
+        self._servo.stop()
         GPIO.cleanup()
