@@ -1,5 +1,6 @@
 from time import sleep
 import RPi.GPIO as GPIO
+import pigpio
 
 
 class ServoController:
@@ -18,10 +19,14 @@ class ServoController:
         self._min_sleep = conf.get("min_sleep", 0.0001)  # minimum sleeping time between each iteration
         self._max_sleep = conf.get("max_sleep", 0.005)  # maximum sleeping time between each iteration
 
-        self._percent_min = min_duty / period * 100
-        self._percent_max = max_duty / period * 100
+        self._percent_min = 500
+        self._percent_max = 2500
 
         self._min_increment = 10 * (self._percent_max - self._percent_min) / self._max_angle
+
+        pwm = pigpio.pi()
+        pwm.set_mode(signal_pin, pigpio.OUTPUT)
+        pwm.set_PWM_frequency(signal_pin, 1 / period * 1000)
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(signal_pin, GPIO.OUT)
