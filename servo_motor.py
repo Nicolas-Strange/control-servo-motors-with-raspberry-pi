@@ -21,7 +21,7 @@ class ServoController:
         self._percent_min = min_duty / period * 100
         self._percent_max = max_duty / period * 100
 
-        self._min_increment = (self._percent_max - self._percent_min) / self._max_angle
+        self._min_increment = 10 * (self._percent_max - self._percent_min) / self._max_angle
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(signal_pin, GPIO.OUT)
