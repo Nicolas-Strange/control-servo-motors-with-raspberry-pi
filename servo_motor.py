@@ -54,9 +54,15 @@ class ServoController:
 
         self._current_angle = angle
         value_duty = value_start
-        while value_duty <= value_end:
+
+        in_loop = True
+        while in_loop:
             self._servo.ChangeDutyCycle(value_duty)
             value_duty += increment
+            if inc > 0:
+                in_loop = value_duty <= value_end
+            else:
+                in_loop = value_duty >= value_end
             sleep(sleep_iter)
 
         return sleep_iter
