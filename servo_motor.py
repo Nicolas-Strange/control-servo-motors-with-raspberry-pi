@@ -63,6 +63,9 @@ class ServoController:
                 in_loop = value_duty <= value_end
             else:
                 in_loop = value_duty >= value_end
+
+            if not in_loop:
+                self._servo.ChangeDutyCycle(value_end)
             sleep(sleep_iter)
 
         return sleep_iter

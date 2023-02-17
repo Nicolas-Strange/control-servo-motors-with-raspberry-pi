@@ -4,7 +4,7 @@
     "min_sleep": 0.01,
     "period_ms": 20,
     "max_angle": 180,
-    "min_duty_ms": 1,
-    "max_duty_ms": 2
+    "min_duty_ms": 0.5,
+    "max_duty_ms": 2.5
   }
 }

@@ -38,7 +38,7 @@ class Main:
                     append_file(f"{sleep_tm},{time_proc},{inc},{sleep_iter}")
                     print(f"speed: {sleep_tm}% -- time: {time_proc}s -- increment: {inc} -- sleep_iter {sleep_iter}")
                     sleep(1)
-                    self._servo.go_to_position(angle=min_val_inc, speed=100)
+                    self._servo.go_to_position(angle=min_val_inc, speed=100, increment_factor=100)
                     sleep(1)
         except KeyboardInterrupt:
             self._servo.release()
