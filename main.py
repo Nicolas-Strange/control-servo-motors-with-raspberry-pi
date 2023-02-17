@@ -26,25 +26,20 @@ class Main:
         self._servo.release()
         min_val_inc = -90
         max_val_inc = 90
-        self._servo.go_to_position(angle=90, speed=100, inc=10)
-
-        percent_min = self._conf[self.SERVO_NAME]["min_duty_ms"] / self._conf[self.SERVO_NAME]["period_ms"] * 100
-        percent_max = self._conf[self.SERVO_NAME]["max_duty_ms"] / self._conf[self.SERVO_NAME]["period_ms"] * 100
+        self._servo.go_to_position(angle=90, speed=100)
 
         with open('output.txt', 'w') as fd:
-            fd.write('speed(%),time(s),increment,sleep_iter(s)\n')
+            fd.write('speed(%),time(s),sleep_iter(s)\n')
         try:
-            for inc in range(1, 100):
-                inc = inc / 100 * (percent_max - percent_min)
-                for sleep_tm in range(10, 100, 5):
-                    init_time = time_ns()
-                    sleep_iter = self._servo.go_to_position(angle=max_val_inc, speed=sleep_tm, inc=inc)
-                    time_proc = (time_ns() - init_time) / (10 ** 9)
-                    append_file(f"{sleep_tm},{time_proc},{inc},{sleep_iter}")
-                    print(f"speed: {sleep_tm}% -- time: {time_proc}s -- increment: {inc} -- sleep_iter {sleep_iter}")
-                    sleep(1)
-                    self._servo.go_to_position(angle=min_val_inc, speed=100, inc=1)
-                    sleep(1)
+            for sleep_tm in range(10, 100, 5):
+                init_time = time_ns()
+                sleep_iter = self._servo.go_to_position(angle=max_val_inc, speed=sleep_tm)
+                time_proc = (time_ns() - init_time) / (10 ** 9)
+                append_file(f"{sleep_tm},{time_proc},{sleep_iter}")
+                print(f"speed: {sleep_tm}% -- time: {time_proc}s -- sleep_iter {sleep_iter}")
+                sleep(1)
+                self._servo.go_to_position(angle=min_val_inc, speed=100)
+                sleep(1)
         except KeyboardInterrupt:
             self._servo.release()
 
