@@ -5,21 +5,28 @@ import RPi.GPIO as GPIO
 class ServoController:
     """ core class to control a servo motor with any Raspberry Pi except the Pico"""
 
-    def __init__(self, signal_pin: int, freq: int = 50, **conf):
+    def __init__(self, signal_pin: int, **conf):
         """
         init function
         :param signal_pin: GPIO number where the signal of the servo is plugged (yellow wire)
         :param freq: frequency of the PWM (Pulse Width Modulation) in Hz (50 by default)
         """
         self._signal_pin = signal_pin
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(signal_pin, GPIO.OUT)
-        self._servo = GPIO.PWM(signal_pin, freq)
-        GPIO.output(self._signal_pin, True)
 
-        self._max_angle = conf.get("max_angle", 90)  # maximum operating angle
+        period = conf.get("period_ms", 20)  # period of a duty cycle
+        self._max_angle = conf.get("max_angle", 180)  # maximum angle of the servo
+        min_duty = conf.get("min_duty_ms", 1)  # maximum angle of the servo
+        max_duty = conf.get("max_duty_ms", 2)  # maximum angle of the servo
         self._min_sleep = conf.get("min_sleep", 0.0001)  # minimum sleeping time between each iteration
         self._max_sleep = conf.get("max_sleep", 0.005)  # maximum sleeping time between each iteration
+
+        self._percent_min = min_duty / period * 100
+        self._percent_max = max_duty / period * 100
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(signal_pin, GPIO.OUT)
+        self._servo = GPIO.PWM(signal_pin, 1 / period * 1000)
+        GPIO.output(self._signal_pin, True)
 
         self._current_angle = 0
         self.go_to_position(angle=0, speed=100, inc=1)
@@ -54,6 +61,7 @@ class ServoController:
         """ release the PWM """
         GPIO.output(self._signal_pin, False)
 
-    def _angle_to_duty(self, angle: int) -> int:
+    def _angle_to_duty(self, angle: int) -> float:
         """ convert the angle to duty cycle """
-        return int((angle + self._max_angle / 2) / self._max_angle * 100)
+        percent_duty = (angle + self._max_angle / 2) / self._max_angle
+        return (percent_duty * (self._percent_max - self._percent_min)) + self._percent_min

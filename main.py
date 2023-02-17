@@ -14,7 +14,7 @@ class Main:
         with open("./params/servo_params.json") as infile:
             self._conf = json.load(infile)
 
-        self._servo = ServoController(signal_pin=17, **self._conf["servo_1"])
+        self._servo = ServoController(signal_pin=2, **self._conf["servo_1"])
 
     def run(self) -> None:
         """
@@ -29,17 +29,19 @@ class Main:
 
         with open('output.txt', 'w') as fd:
             fd.write('speed(%),time(s),increment,sleep_iter(s)\n')
-
-        for inc in range(1, 20):
-            for sleep_tm in range(10, 100, 5):
-                init_time = time_ns()
-                sleep_iter = self._servo.go_to_position(angle=max_val_inc, speed=sleep_tm, inc=inc)
-                time_proc = (time_ns() - init_time) / (10 ** 9)
-                append_file(f"{sleep_tm},{time_proc},{inc},{sleep_iter}")
-                print(f"speed: {sleep_tm}% -- time: {time_proc}s -- increment: {inc} -- sleep_iter {sleep_iter}")
-                sleep(1)
-                self._servo.go_to_position(angle=min_val_inc, speed=100, inc=1)
-                sleep(1)
+        try:
+            for inc in range(1, 20):
+                for sleep_tm in range(10, 100, 5):
+                    init_time = time_ns()
+                    sleep_iter = self._servo.go_to_position(angle=max_val_inc, speed=sleep_tm, inc=inc)
+                    time_proc = (time_ns() - init_time) / (10 ** 9)
+                    append_file(f"{sleep_tm},{time_proc},{inc},{sleep_iter}")
+                    print(f"speed: {sleep_tm}% -- time: {time_proc}s -- increment: {inc} -- sleep_iter {sleep_iter}")
+                    sleep(1)
+                    self._servo.go_to_position(angle=min_val_inc, speed=100, inc=1)
+                    sleep(1)
+        except KeyboardInterrupt:
+            self._servo.release()
 
         self._servo.release()
 
