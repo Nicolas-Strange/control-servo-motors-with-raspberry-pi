@@ -31,11 +31,10 @@ class ServoController:
 
     def go_to_position(self, angle: int, speed: int, increment_factor: int) -> float:
         """
-        set the position of the servo in degree.
-        we have setup the position with 0 corresponding to the middle, positive angles to clock-wise,
-        and negative angles to counter clock-wise.
-        e.g. if the servo can rotate 180 degrees, the middle will be 0, the max on the right will be 90 and the max
-        on the left will be -90.
+        To set the position of the servo in degrees, we have set up the position with 0 corresponding to the middle,
+        positive angles to clockwise rotation, and negative angles to counterclockwise rotation.
+        For example, if the servo can rotate 180 degrees, the middle will be 0, the maximum position on the right
+        will be 90 degrees, and the maximum position on the left will be -90 degrees.
         :param angle: position in degree
         :param speed: value between 1 and 100 corresponding to the percent of the maximum speed of the servo
         :param increment_factor: how many times the minimum increment
