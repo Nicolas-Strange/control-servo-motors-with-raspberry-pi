@@ -1,7 +1,7 @@
 import json
 from time import sleep, time_ns
 
-from servo_motor import ServoController
+from servo_motor_for_analysis import ServoController
 
 
 class Main:
@@ -12,6 +12,9 @@ class Main:
         """
         init function
         """
+        with open("../params/servo_params.json") as infile:
+            self._conf = json.load(infile)
+
         self._servo = ServoController(signal_pin=2, **self._conf[self.SERVO_NAME])
 
     def run(self) -> None:
@@ -23,7 +26,7 @@ class Main:
         min_val_inc = -90
         max_val_inc = 90
 
-        with open('output.txt', 'w') as fd:
+        with open('output.csv', 'w') as fd:
             fd.write('speed(%),time(s),increment,sleep_iter(s)\n')
 
         try:
@@ -42,6 +45,13 @@ class Main:
             self._servo.release()
 
         self._servo.release()
+
+
+def append_file(value: str) -> None:
+    """ write in a file: append mode """
+    with open('output.csv', 'a') as fd:
+        fd.write(f'{value}\n')
+
 
 if __name__ == '__main__':
     run = Main()
