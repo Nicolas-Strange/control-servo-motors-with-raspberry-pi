@@ -16,7 +16,7 @@ class ServoController:
         min_duty = conf.get("min_duty_ms", 1)  # maximum angle of the servo
         max_duty = conf.get("max_duty_ms", 2)  # maximum angle of the servo
         self._min_sleep = conf.get("min_sleep_s", 0.001)  # minimum sleeping time between each iteration
-        self._max_sleep = conf.get("max_sleep_s", 0.004)  # maximum sleeping time between each iteration
+        self._max_sleep = conf.get("max_sleep_s", 0.1)  # maximum sleeping time between each iteration
 
         self._percent_min = min_duty / period * 100
         self._percent_max = max_duty / period * 100

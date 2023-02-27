@@ -37,7 +37,7 @@ class Main:
                     sleep_iter = self._servo.go_to_position(angle=max_val_inc, speed=sleep_tm, increment_factor=inc)
                     time_proc = (time_ns() - init_time) / (10 ** 9)
                     append_file(f"{sleep_tm},{time_proc},{inc},{sleep_iter}")
-                    print(f"speed: {sleep_tm}% -- time: {time_proc}s -- "
+                    print(f"speed: {sleep_tm}% -- time(s): {time_proc}s -- "
                           f"increment: {inc} -- sleep_iter(ms) {sleep_iter * 1000}")
                     sleep(1)
                     self._servo.go_to_position(angle=min_val_inc, speed=100, increment_factor=250)
