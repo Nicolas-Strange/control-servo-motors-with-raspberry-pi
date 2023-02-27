@@ -1,7 +1,7 @@
 {
   "servo_1": {
-    "max_sleep": 0.1,
-    "min_sleep": 0.01,
+    "max_sleep_s": 0.001,
+    "min_sleep_s": 0.004,
     "period_ms": 20,
     "max_angle": 180,
     "min_duty_ms": 0.5,
