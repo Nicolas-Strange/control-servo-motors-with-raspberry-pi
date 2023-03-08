@@ -28,7 +28,7 @@ class Main:
         For each iteration the motion value will be read
         """
 
-        with open(f'{self.FILE_NAME}.csv', 'a') as fd:
+        with open(f'{self.FILE_NAME}.csv', 'w') as fd:
             fd.write('rotation_speed(°/s),steps,waiting_time(s)\n')
 
         try:
