@@ -29,15 +29,16 @@ class ServoController:
         self._current_angle = 0
         self._servo.start((self._percent_max - self._percent_min) / 2 + self._percent_min)
 
-    def go_to_position(self, angle: int, speed: int, increment_factor: int) -> float:
+    def go_to_position(self, angle: int, percent_waiting: int, steps: int) -> float:
         """
         To set the position of the servo in degrees, we have set up the position with 0 corresponding to the middle,
         positive angles to clockwise rotation, and negative angles to counterclockwise rotation.
         For example, if the servo can rotate 180 degrees, the middle will be 0, the maximum position on the right
         will be 90 degrees, and the maximum position on the left will be -90 degrees.
         :param angle: position in degree
-        :param speed: value between 1 and 100 corresponding to the percent of the maximum speed of the servo
-        :param increment_factor: how many times the minimum increment
+        :param percent_waiting: value between 1 and 100 corresponding to the percent of the
+            maximum waiting time between each step
+        :param steps: how many times the minimum increment
         """
         # range the value of angle between -90 and 90
         angle = max(-self._max_angle / 2, angle)
@@ -46,10 +47,10 @@ class ServoController:
         value_start = self._angle_to_duty(angle=self._current_angle)
         value_end = self._angle_to_duty(angle=angle)
 
-        increment = increment_factor * self._min_increment \
-            if value_end - value_start > 0 else -self._min_increment * increment_factor
+        increment = steps * self._min_increment \
+            if value_end - value_start > 0 else -self._min_increment * steps
 
-        sleep_iter = self._max_sleep - (self._max_sleep - self._min_sleep) * speed / 100 + self._min_sleep
+        waiting_time = self._max_sleep - (self._max_sleep - self._min_sleep) * percent_waiting / 100 + self._min_sleep
 
         self._current_angle = angle
         value_duty = value_start
@@ -65,9 +66,9 @@ class ServoController:
 
             if not in_loop:
                 self._servo.ChangeDutyCycle(value_end)
-            sleep(sleep_iter)
+            sleep(waiting_time)
 
-        return sleep_iter
+        return waiting_time
 
     def _angle_to_duty(self, angle: int) -> float:
         """ convert the angle to duty cycle """

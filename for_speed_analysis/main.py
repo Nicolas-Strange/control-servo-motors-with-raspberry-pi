@@ -6,7 +6,12 @@ from servo_motor_for_analysis import ServoController
 
 class Main:
     """ main class that will handle the loop """
+    FILE_NAME = "time_analysis_servo_raspberry"
     SERVO_NAME = "servo_1"
+    MAX_SPEED = 600
+
+    min_val_inc = -90
+    max_val_inc = 90
 
     def __init__(self):
         """
@@ -23,36 +28,44 @@ class Main:
         For each iteration the motion value will be read
         """
 
-        min_val_inc = -90
-        max_val_inc = 90
-
-        with open('output.csv', 'w') as fd:
-            fd.write('speed(%),time(s),increment,sleep_iter(ms)\n')
+        with open(f'{self.FILE_NAME}.csv', 'a') as fd:
+            fd.write('rotation_speed(°/s),steps,waiting_time(s)\n')
 
         try:
-            self._servo.go_to_position(angle=min_val_inc, speed=100, increment_factor=250)
-            for inc in range(1, 230, 1):
-                for sleep_tm in range(5, 105, 5):
+            self._init_position()
+            for step in range(1, 230, 1):
+                for percent_waiting in range(5, 105, 5):
                     init_time = time_ns()
-                    sleep_iter = self._servo.go_to_position(angle=max_val_inc, speed=sleep_tm, increment_factor=inc)
-                    time_proc = (time_ns() - init_time) / (10 ** 9)
-                    sleep_iter = sleep_iter * 1000
-                    append_file(f"{sleep_tm},{time_proc},{inc},{sleep_iter}")
-                    print(f"speed: {sleep_tm}% -- time(s): {time_proc}s -- "
-                          f"increment: {inc} -- sleep_iter(ms) {sleep_iter}")
-                    sleep(1)
-                    self._servo.go_to_position(angle=min_val_inc, speed=100, increment_factor=250)
-                    sleep(1)
+                    waiting_time = \
+                        self._servo.go_to_position(angle=self.max_val_inc, percent_waiting=percent_waiting, steps=step)
+                    time_to_rotate = (time_ns() - init_time) / (10 ** 9)
+                    rotation_speed = 180 / time_to_rotate
+
+                    if rotation_speed > self.MAX_SPEED:
+                        continue
+
+                    self._append_file(f"{rotation_speed},{step},{waiting_time}")
+
+                    print(f"rotation_speed(°/s): {rotation_speed} -- "
+                          f"step: {step} -- waiting_time(s) {waiting_time}")
+
+                    self._init_position()
+
         except KeyboardInterrupt:
             self._servo.release()
 
         self._servo.release()
 
+    def _init_position(self):
+        """ initialize the servo position """
+        sleep(1)
+        self._servo.go_to_position(angle=self.min_val_inc, percent_waiting=100, steps=250)
+        sleep(1)
 
-def append_file(value: str) -> None:
-    """ write in a file: append mode """
-    with open('output.csv', 'a') as fd:
-        fd.write(f'{value}\n')
+    def _append_file(self, value: str) -> None:
+        """ write in a file: append mode """
+        with open(f'{self.FILE_NAME}.csv', 'a') as fd:
+            fd.write(f'{value}\n')
 
 
 if __name__ == '__main__':
