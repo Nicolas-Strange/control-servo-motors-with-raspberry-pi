@@ -41,9 +41,6 @@ class Main:
                     time_to_rotate = (time_ns() - init_time) / (10 ** 9)
                     rotation_speed = 180 / time_to_rotate
 
-                    if rotation_speed > self.MAX_SPEED:
-                        continue
-
                     self._append_file(f"{rotation_speed},{step},{waiting_time}")
 
                     print(f"rotation_speed(°/s): {rotation_speed} -- "
