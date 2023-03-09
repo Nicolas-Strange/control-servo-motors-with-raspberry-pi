@@ -99,10 +99,6 @@ class ServoController:
             if min_speed <= speed <= max_speed:
                 params = self._speed_config[step]["params"]
 
-                # When we ran the regression, we multiplied the waiting time by 1000 to facilitate better convergence
-                # of the model. Additionally, since the waiting time must be in microseconds,
-                # we need to divide it by 1000 and then multiply by 10 ** 6, resulting in a final
-                # multiplication by 1000.
-                waiting_time = (params[0] / (speed - params[1])) * 1000
+                waiting_time = (params[0] / (speed - params[1])) / 1000
 
-                return int(step), int(round(waiting_time, 1))
+                return int(step), waiting_time
