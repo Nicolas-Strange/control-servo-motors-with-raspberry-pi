@@ -17,7 +17,7 @@ class Main:
         """
         init function
         """
-        with open("../params/servo_params.json") as infile:
+        with open("params/servo_params.json") as infile:
             self._conf = json.load(infile)
 
         self._servo = ServoController(signal_pin=2, **self._conf[self.SERVO_NAME])
@@ -35,11 +35,11 @@ class Main:
             self._init_position()
             for step in range(1, 230, 1):
                 for percent_waiting in range(5, 105, 5):
-                    init_time = time_ns()
+                    start_time = time_ns()
                     waiting_time = \
                         self._servo.go_to_position(angle=self.max_val_inc, percent_waiting=percent_waiting, steps=step)
-                    time_to_rotate = (time_ns() - init_time) / (10 ** 9)
-                    rotation_speed = 180 / time_to_rotate
+                    rotation_time = (time_ns() - start_time) / (10 ** 9)
+                    rotation_speed = 180 / rotation_time
 
                     self._append_file(f"{rotation_speed},{step},{waiting_time}")
 
