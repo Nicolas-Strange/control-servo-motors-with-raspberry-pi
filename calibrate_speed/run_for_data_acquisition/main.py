@@ -61,7 +61,7 @@ class Main:
 
     def _append_file(self, value: str) -> None:
         """ write in a file: append mode """
-        with open(f'{self.FILE_NAME}.csv', 'a') as fd:
+        with open(f'../data/{self.FILE_NAME}.csv', 'a') as fd:
             fd.write(f'{value}\n')
 
 
