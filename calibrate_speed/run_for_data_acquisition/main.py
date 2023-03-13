@@ -6,7 +6,7 @@ from servo_motor_for_analysis import ServoController
 
 class Main:
     """ main class that will handle the loop """
-    FILE_NAME = "time_analysis_servo_raspberry"
+    PATH_FILE = "../data/time_analysis_servo_raspberry.csv"
     SERVO_NAME = "servo_1"
     MAX_SPEED = 600
 
@@ -17,7 +17,7 @@ class Main:
         """
         init function
         """
-        with open("params/servo_params.json") as infile:
+        with open("../../core_run_raspberry_pi/params/servo_params.json") as infile:
             self._conf = json.load(infile)
 
         self._servo = ServoController(signal_pin=2, **self._conf[self.SERVO_NAME])
@@ -28,7 +28,7 @@ class Main:
         For each iteration the motion value will be read
         """
 
-        with open(f'{self.FILE_NAME}.csv', 'w') as fd:
+        with open(self.PATH_FILE, 'w') as fd:
             fd.write('rotation_speed(°/s),steps,waiting_time(s)\n')
 
         try:
@@ -61,7 +61,7 @@ class Main:
 
     def _append_file(self, value: str) -> None:
         """ write in a file: append mode """
-        with open(f'../data/{self.FILE_NAME}.csv', 'a') as fd:
+        with open(self.PATH_FILE, 'a') as fd:
             fd.write(f'{value}\n')
 
 
