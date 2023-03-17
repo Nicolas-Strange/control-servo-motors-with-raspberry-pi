@@ -1,13 +1,14 @@
 import json
 from time import sleep, time_ns
-
+import RPi.GPIO as GPIO
 from servo_motor_for_analysis import ServoController
 
 
 class Main:
     """ main class that will handle the loop """
-    PATH_FILE = "../data/time_analysis_servo_raspberry.csv"
-    SERVO_NAME = "servo_1"
+    SERVO_NAME = "servo_sg9"
+    FILE_NAME = f"time_analysis_raspberry_3"
+
     MAX_SPEED = 600
 
     min_val_inc = -90
@@ -22,22 +23,33 @@ class Main:
 
         self._servo = ServoController(signal_pin=2, **self._conf[self.SERVO_NAME])
 
+        self._gpio_photo_intercept = 3
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+
+        GPIO.setup(self._gpio_photo_intercept, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
     def run(self) -> None:
         """
         core function to iterate
         For each iteration the motion value will be read
         """
 
-        with open(self.PATH_FILE, 'w') as fd:
+        with open(f'../data/{self.FILE_NAME}_{self.SERVO_NAME}.csv', 'w') as fd:
             fd.write('rotation_speed(°/s),steps,waiting_time(s)\n')
 
         try:
             self._init_position()
-            for step in range(1, 230, 1):
-                for percent_waiting in range(5, 105, 5):
+            for step in range(180, 0, -10):
+                for percent_waiting in range(100, -1, -1):
                     start_time = time_ns()
                     waiting_time = \
                         self._servo.go_to_position(angle=self.max_val_inc, percent_waiting=percent_waiting, steps=step)
+
+                    # While the IR sensor is not activated we wait
+                    while GPIO.input(self._gpio_photo_intercept):
+                        sleep(0.001)
+
                     rotation_time = (time_ns() - start_time) / (10 ** 9)
                     rotation_speed = 180 / rotation_time
 
@@ -61,7 +73,7 @@ class Main:
 
     def _append_file(self, value: str) -> None:
         """ write in a file: append mode """
-        with open(self.PATH_FILE, 'a') as fd:
+        with open(f'../data/{self.FILE_NAME}_{self.SERVO_NAME}.csv', 'a') as fd:
             fd.write(f'{value}\n')
 
 

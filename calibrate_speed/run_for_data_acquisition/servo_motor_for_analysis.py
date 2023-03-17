@@ -21,8 +21,6 @@ class ServoController:
         self._percent_min = min_duty / period * 100
         self._percent_max = max_duty / period * 100
 
-        self._min_increment = (self._percent_max - self._percent_min) / self._max_angle
-
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(signal_pin, GPIO.OUT)
         self._servo = GPIO.PWM(signal_pin, 1 / period * 1000)
@@ -47,12 +45,16 @@ class ServoController:
         value_start = self._angle_to_duty(angle=self._current_angle)
         value_end = self._angle_to_duty(angle=angle)
 
-        increment = steps * self._min_increment \
-            if value_end - value_start > 0 else -self._min_increment * steps
+        steps = int(self._max_angle / steps)
+        increment = steps if value_end - value_start > 0 else -steps
 
-        waiting_time = self._max_sleep - (self._max_sleep - self._min_sleep) * percent_waiting / 100 + self._min_sleep
+        waiting_time = (self._max_sleep - self._min_sleep) * percent_waiting / 100 + self._min_sleep
 
-        self._current_angle = angle
+        if abs(increment) >= abs(angle - self._current_angle):
+            self._servo.ChangeDutyCycle(value_end)
+            self._current_angle = angle
+            return waiting_time
+
         value_duty = value_start
 
         in_loop = True
@@ -68,6 +70,7 @@ class ServoController:
                 self._servo.ChangeDutyCycle(value_end)
             sleep(waiting_time)
 
+        self._current_angle = angle
         return waiting_time
 
     def _angle_to_duty(self, angle: int) -> float:
