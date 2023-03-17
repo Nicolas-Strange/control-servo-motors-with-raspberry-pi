@@ -18,7 +18,7 @@ class Main:
         """
         init function
         """
-        with open("../../core_run_raspberry_pi/params/servo_params.json") as infile:
+        with open("./params/servo_params.json") as infile:
             self._conf = json.load(infile)
 
         self._servo = ServoController(signal_pin=2, **self._conf[self.SERVO_NAME])
