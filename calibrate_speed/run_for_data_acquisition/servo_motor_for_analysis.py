@@ -13,13 +13,16 @@ class ServoController:
         """
         period = conf.get("period_ms", 20)  # period of a duty cycle
         self._max_angle = conf.get("max_angle", 180)  # maximum angle of the servo
-        min_duty = conf.get("min_duty_ms", 1)  # maximum angle of the servo
+        min_duty = conf.get("min_duty_ms", 1)  # minimum angle of the servo
         max_duty = conf.get("max_duty_ms", 2)  # maximum angle of the servo
         self._min_sleep = conf.get("min_sleep_s", 0.001)  # minimum sleeping time between each iteration
         self._max_sleep = conf.get("max_sleep_s", 0.1)  # maximum sleeping time between each iteration
 
         self._percent_min = min_duty / period * 100
         self._percent_max = max_duty / period * 100
+
+        self._min_duty = self._angle_to_duty(self._max_angle / 2)
+        self._max_duty = self._angle_to_duty(- 1 * self._max_angle / 2)
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(signal_pin, GPIO.OUT)
@@ -45,7 +48,7 @@ class ServoController:
         value_start = self._angle_to_duty(angle=self._current_angle)
         value_end = self._angle_to_duty(angle=angle)
 
-        steps = int(self._max_angle / steps)
+        steps = (self._max_duty - self._min_duty) / steps
         increment = steps if value_end - value_start > 0 else -steps
 
         waiting_time = (self._max_sleep - self._min_sleep) * percent_waiting / 100 + self._min_sleep
@@ -76,7 +79,8 @@ class ServoController:
     def _angle_to_duty(self, angle: int) -> float:
         """ convert the angle to duty cycle """
         percent_duty = (angle + self._max_angle / 2) / self._max_angle
-        return (percent_duty * (self._percent_max - self._percent_min)) + self._percent_min
+        return (self._percent_max - self._percent_min) - \
+               (percent_duty * (self._percent_max - self._percent_min)) + self._percent_min
 
     def release(self) -> None:
         """ release the PWM """

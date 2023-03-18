@@ -47,7 +47,7 @@ class Main:
                         self._servo.go_to_position(angle=self.max_val_inc, percent_waiting=percent_waiting, steps=step)
 
                     # While the IR sensor is not activated we wait
-                    while GPIO.input(self._gpio_photo_intercept):
+                    while not GPIO.input(self._gpio_photo_intercept):
                         sleep(0.001)
 
                     rotation_time = (time_ns() - start_time) / (10 ** 9)
@@ -68,7 +68,7 @@ class Main:
     def _init_position(self):
         """ initialize the servo position """
         sleep(1)
-        self._servo.go_to_position(angle=self.min_val_inc, percent_waiting=100, steps=250)
+        self._servo.go_to_position(angle=self.min_val_inc, percent_waiting=0, steps=1)
         sleep(1)
 
     def _append_file(self, value: str) -> None:

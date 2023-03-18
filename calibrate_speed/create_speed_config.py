@@ -75,7 +75,7 @@ def plot_3d(x: list, y: list, y_p: list) -> None:
 
 def run():
     """ core method to perform the analysis """
-    df = pd.read_csv("data/time_analysis_servo_raspberry.csv")
+    df = pd.read_csv("data/time_analysis_raspberry_3_servo_sg9.csv")
 
     df = df[df["steps"] < 20]
     max_speed_servo_specs = 600
