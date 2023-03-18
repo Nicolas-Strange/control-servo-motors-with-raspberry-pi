@@ -52,8 +52,8 @@ class ServoController:
 
         step_calc, waiting_time = self._get_variable_set(percent_speed)
 
-        step_calc = (self._max_duty - self._min_duty) / step_calc
-        increment = step_calc if value_end - value_start > 0 else -step_calc
+        steps = (self._max_duty - self._min_duty) / step_calc
+        increment = steps if value_end - value_start > 0 else -steps
 
         if abs(increment) >= abs(angle - self._current_angle):
             self._servo.ChangeDutyCycle(value_end)
