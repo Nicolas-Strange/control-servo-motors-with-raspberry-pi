@@ -22,7 +22,7 @@ class Main:
         with open("params/servo_params.json") as infile:
             self._conf = json.load(infile)
 
-        with open(f'{self.FILE_NAME}_{self.SERVO_NAME}.csv', 'w') as fd:
+        with open(f'../calibrate_speed/data/{self.FILE_NAME}_{self.SERVO_NAME}.csv', 'w') as fd:
             fd.write('percent_speed,rotation_speed(°/s)\n')
 
         self._servo = ServoController(signal_pin=2, **self._conf[self.SERVO_NAME])
@@ -76,7 +76,7 @@ class Main:
 
     def _append_file(self, value: str) -> None:
         """ write in a file: append mode """
-        with open(f'{self.FILE_NAME}_{self.SERVO_NAME}.csv', 'a') as fd:
+        with open(f'../calibrate_speed/data/{self.FILE_NAME}_{self.SERVO_NAME}.csv', 'a') as fd:
             fd.write(f'{value}\n')
 
 
