@@ -29,6 +29,26 @@ class Main:
 
         GPIO.setup(self._gpio_photo_intercept, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+    def _run(self, percent_waiting: int, step: int) -> None:
+        """ run one epoch """
+        start_time = time_ns()
+        waiting_time = \
+            self._servo.go_to_position(angle=self.max_val_inc, percent_waiting=percent_waiting, steps=step)
+
+        # While the IR sensor is not activated we wait
+        while not GPIO.input(self._gpio_photo_intercept):
+            sleep(0.001)
+
+        rotation_time = (time_ns() - start_time) / (10 ** 9)
+        rotation_speed = 180 / rotation_time
+
+        self._append_file(f"{rotation_speed},{step},{waiting_time}")
+
+        print(f"rotation_speed(°/s): {rotation_speed} -- "
+              f"step: {step} -- waiting_time(s) {waiting_time}")
+
+        self._init_position()
+
     def run(self) -> None:
         """
         core function to iterate
@@ -42,23 +62,10 @@ class Main:
             self._init_position()
             for step in range(180, 0, -10):
                 for percent_waiting in range(100, -1, -1):
-                    start_time = time_ns()
-                    waiting_time = \
-                        self._servo.go_to_position(angle=self.max_val_inc, percent_waiting=percent_waiting, steps=step)
+                    self._run(percent_waiting=percent_waiting, step=step)
 
-                    # While the IR sensor is not activated we wait
-                    while not GPIO.input(self._gpio_photo_intercept):
-                        sleep(0.001)
-
-                    rotation_time = (time_ns() - start_time) / (10 ** 9)
-                    rotation_speed = 180 / rotation_time
-
-                    self._append_file(f"{rotation_speed},{step},{waiting_time}")
-
-                    print(f"rotation_speed(°/s): {rotation_speed} -- "
-                          f"step: {step} -- waiting_time(s) {waiting_time}")
-
-                    self._init_position()
+            # full speed
+            self._run(percent_waiting=0, step=1)
 
         except KeyboardInterrupt:
             self._servo.release()

@@ -16,13 +16,15 @@ class ServoController:
         min_duty = conf.get("min_duty_ms", 0.5)  # maximum angle of the servo
         max_duty = conf.get("max_duty_ms", 2.5)  # maximum angle of the servo
 
-        self._min_speed = conf.get("min_speed_d_s", 9.5)  # min speed of the servo
-        self._max_speed = conf.get("max_speed_d_s", 594)  # maximum speed of the servo
+        self._min_speed = conf.get("min_speed_d_s", 7)  # min speed of the servo
+        self._max_speed = conf.get("max_speed_d_s", 400)  # maximum speed of the servo
         self._speed_config = conf.get("speed_config", {})
-        self._max_step = max([int(i) for i in self._speed_config.keys()])
 
         self._percent_min = min_duty / period * 100
         self._percent_max = max_duty / period * 100
+
+        self._min_duty = self._angle_to_duty(self._max_angle / 2)
+        self._max_duty = self._angle_to_duty(- 1 * self._max_angle / 2)
 
         self._min_increment = (self._percent_max - self._percent_min) / self._max_angle
 
@@ -48,17 +50,17 @@ class ServoController:
         value_start = self._angle_to_duty(angle=self._current_angle)
         value_end = self._angle_to_duty(angle=angle)
 
-        step, waiting_time = self._get_variable_set(percent_speed)
+        step_calc, waiting_time = self._get_variable_set(percent_speed)
 
-        increment = step * self._min_increment \
-            if value_end - value_start > 0 else -self._min_increment * step
+        step_calc = (self._max_duty - self._min_duty) / step_calc
+        increment = step_calc if value_end - value_start > 0 else -step_calc
 
-        self._current_angle = angle
-        value_duty = value_start
-
-        if abs(increment) > abs(value_end - value_start):
+        if abs(increment) >= abs(angle - self._current_angle):
             self._servo.ChangeDutyCycle(value_end)
-            return waiting_time, step
+            self._current_angle = angle
+            return waiting_time, step_calc
+
+        value_duty = value_start
 
         in_loop = True
         while in_loop:
@@ -73,7 +75,8 @@ class ServoController:
                 self._servo.ChangeDutyCycle(value_end)
             sleep(waiting_time)
 
-        return waiting_time, step
+        self._current_angle = angle
+        return waiting_time, step_calc
 
     def release(self) -> None:
         """ release the PWM """
@@ -92,12 +95,11 @@ class ServoController:
 
         speed = self._min_speed + percent_speed * (self._max_speed - self._min_speed) / 100
 
-        for step in range(1, self._max_step + 1, 1):
-            step = str(step)
-            max_speed = self._speed_config[step]["max_speed"]
-            min_speed = self._speed_config[step]["min_speed"]
+        for step, value in self._speed_config.items():
+            max_speed = value["max_speed"]
+            min_speed = value["min_speed"]
             if min_speed <= speed <= max_speed:
-                params = self._speed_config[step]["params"]
+                params = value["params"]
 
                 waiting_time = (params[0] / (speed - params[1])) / 1000
 
