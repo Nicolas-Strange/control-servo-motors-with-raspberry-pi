@@ -86,7 +86,8 @@ class ServoController:
     def _angle_to_duty(self, angle: int) -> float:
         """ convert the angle to duty cycle """
         percent_duty = (angle + self._max_angle / 2) / self._max_angle
-        return (percent_duty * (self._percent_max - self._percent_min)) + self._percent_min
+        return (self._percent_max - self._percent_min) - \
+               (percent_duty * (self._percent_max - self._percent_min)) + self._percent_min
 
     def _get_variable_set(self, percent_speed: float) -> tuple:
         """ calculate the best parameter set to rotate the servo at the desired speed """
