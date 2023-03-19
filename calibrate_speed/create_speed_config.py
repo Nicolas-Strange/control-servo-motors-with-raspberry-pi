@@ -183,11 +183,10 @@ def build_params(df: pd.DataFrame, init_params_model: list, min_mae: float,
     return parameters, max_speed_all, min_speed_all
 
 
-def save_params(name_servo: str, clean_parameters: dict, path_config_load: str, path_config_save: str,
+def save_params(name_servo: str, clean_parameters: dict, path_config_load: str, path_config_saves: list,
                 min_speed_all: float, max_speed_all: float):
     """ override the parameters """
     config_analysis = load_json(path_config_load)
-    config_final = load_json(path_config_save)
 
     config_analysis[name_servo]["speed_config"] = clean_parameters
     del config_analysis[name_servo]["min_sleep_s"]
@@ -196,21 +195,26 @@ def save_params(name_servo: str, clean_parameters: dict, path_config_load: str, 
     config_analysis[name_servo]["min_speed_d_s"] = min_speed_all
     config_analysis[name_servo]["max_speed_d_s"] = max_speed_all
 
-    config_final[name_servo] = config_analysis[name_servo]
+    for path_config_save in path_config_saves:
+        config_final = load_json(path_config_save)
+        config_final[name_servo] = config_analysis[name_servo]
 
-    save_json(path=path_config_save, json_to_save=config_final)
+        save_json(path=path_config_save, json_to_save=config_final)
 
 
 def run():
     """ core method to perform the analysis """
 
-    name_servo = "servo_s53_20"
+    name_servo = "servo_sg9"
     init_params_model = [24.36093280680071, 3.6269641385313385]
     max_speed_servo_specs = 600
     min_mae = 0.9
 
     path_config_load = "./run_for_data_acquisition/params/servo_params.json"
-    path_config_save = "../core_run_raspberry_pi/params/servo_params.json"
+    path_config_saves = [
+        "../core_run_raspberry_pi/params/servo_params.json",
+        "./run_for_data_visualization/params/servo_params.json"
+    ]
 
     df = pd.read_csv(f"data/time_analysis_raspberry_3_{name_servo}.csv")
 
@@ -229,7 +233,7 @@ def run():
 
     save_params(
         name_servo=name_servo, clean_parameters=clean_parameters, path_config_load=path_config_load,
-        path_config_save=path_config_save, min_speed_all=min_speed_all, max_speed_all=max_speed_all)
+        path_config_saves=path_config_saves, min_speed_all=min_speed_all, max_speed_all=max_speed_all)
 
 
 if __name__ == '__main__':
