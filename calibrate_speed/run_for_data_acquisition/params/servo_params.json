@@ -10,11 +10,11 @@
   },
   "servo_s53_20": {
     "period_ms": 20,
-    "max_angle": 225,
-    "min_duty_ms": 0.5,
-    "max_duty_ms": 2.5,
+    "max_angle": 270,
+    "min_duty_ms": 0.25,
+    "max_duty_ms": 2.35,
     "min_sleep_s": 0.0001,
-    "max_sleep_s": 0.1,
+    "max_sleep_s": 0.2,
     "max_speed_d_s": 600
   }
 }
