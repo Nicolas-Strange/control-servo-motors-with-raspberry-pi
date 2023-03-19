@@ -17,5 +17,24 @@
             }
         },
         "min_speed_d_s": 9.93
+    },
+    "servo_s53_20": {
+        "period_ms": 20,
+        "max_angle": 270,
+        "min_duty_ms": 0.25,
+        "max_duty_ms": 2.35,
+        "max_speed_d_s": 162.22,
+        "speed_config": {
+            "180": {
+                "min_speed": 7.49,
+                "max_speed": 162.22,
+                "params": [
+                    1376.5634197841807,
+                    1.432163606396294
+                ],
+                "mae": "0.8861 degree/s"
+            }
+        },
+        "min_speed_d_s": 7.49
     }
 }
