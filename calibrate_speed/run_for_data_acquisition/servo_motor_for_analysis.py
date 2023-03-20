@@ -29,6 +29,7 @@ class ServoController:
         self._servo = GPIO.PWM(signal_pin, 1 / period * 1000)
         self._current_angle = 0
         self._servo.start((self._percent_max - self._percent_min) / 2 + self._percent_min)
+        sleep(1)
 
     def go_to_position(self, angle: int, percent_waiting: int, steps: int) -> float:
         """

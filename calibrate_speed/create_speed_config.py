@@ -156,7 +156,7 @@ def build_params(df: pd.DataFrame, init_params_model: list, min_mae: float,
 
             res, y_p, mae = regression(x=x, y=y, params_model=init_params_model)
             is_none = mae
-            mae = min_mae + 1 if mae is None else mae
+            mae = min_mae - 1 if mae is None else mae
 
             if is_none is None or mae > min_mae or len(x) <= 3:
                 continue
