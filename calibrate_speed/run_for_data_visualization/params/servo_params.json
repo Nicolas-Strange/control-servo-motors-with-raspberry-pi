@@ -4,16 +4,25 @@
         "max_angle": 180,
         "min_duty_ms": 0.5,
         "max_duty_ms": 2.5,
-        "max_speed_d_s": 298.84,
+        "max_speed_d_s": 236.11,
         "speed_config": {
             "180": {
                 "min_speed": 9.93,
-                "max_speed": 298.84,
+                "max_speed": 223.39,
                 "params": [
-                    951.7416898204232,
-                    1.0368140135545318
+                    936.8382789515716,
+                    1.292320336991827
                 ],
-                "mae": "0.7153 degree/s"
+                "mae": "0.7562 degree/s"
+            },
+            "170": {
+                "min_speed": 10.51,
+                "max_speed": 236.11,
+                "params": [
+                    993.5490427636961,
+                    1.3267772271108065
+                ],
+                "mae": "0.7749 degree/s"
             }
         },
         "min_speed_d_s": 9.93
@@ -23,16 +32,16 @@
         "max_angle": 270,
         "min_duty_ms": 0.25,
         "max_duty_ms": 2.35,
-        "max_speed_d_s": 162.22,
+        "max_speed_d_s": 161.86,
         "speed_config": {
             "180": {
                 "min_speed": 7.49,
-                "max_speed": 162.22,
+                "max_speed": 161.86,
                 "params": [
-                    1376.5634197841807,
-                    1.432163606396294
+                    1373.398231509888,
+                    1.4511600241402587
                 ],
-                "mae": "0.8861 degree/s"
+                "mae": "0.8489 degree/s"
             }
         },
         "min_speed_d_s": 7.49
